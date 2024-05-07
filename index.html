@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="camera *">
-
 <title>Camera Input</title>
 <style>
     body {
@@ -32,21 +30,18 @@
         const videoElement = document.getElementById('videoElement');
         const cameraSelect = document.getElementById('cameraSelect');
 
-        // Get list of available cameras
-        navigator.mediaDevices.enumerateDevices()
-            .then(devices => {
-                devices.forEach(device => {
-                    if (device.kind === 'videoinput') {
-                        const option = document.createElement('option');
-                        option.value = device.deviceId;
-                        option.text = device.label || `Camera ${cameraSelect.length + 1}`;
-                        cameraSelect.appendChild(option);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Error accessing media devices:', error);
+        // Function to populate the dropdown with available cameras
+        async function populateCameraList() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            devices.forEach(device => {
+                if (device.kind === 'videoinput') {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                    cameraSelect.appendChild(option);
+                }
             });
+        }
 
         // Start streaming when camera is selected
         cameraSelect.addEventListener('change', async () => {
@@ -76,6 +71,9 @@
                 videoElement.msRequestFullscreen();
             }
         });
+
+        // Populate the dropdown list with available cameras
+        populateCameraList();
     </script>
 </body>
 </html>
